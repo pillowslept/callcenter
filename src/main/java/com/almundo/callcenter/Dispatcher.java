@@ -20,9 +20,9 @@ public class Dispatcher {
 	List<IncomingCall> callsAtended = new ArrayList<>();
 	List<IncomingCall> callsAtendedAfterBusy = new ArrayList<>();
 	
-	@Async	
+	@Async
 	public void dispatchCall(IncomingCall incomingCall){
-		LOGGER.info("Llamada entrante : " + incomingCall.getCallNumber());
+		LOGGER.info("Ring ring. Llamada entrante : " + incomingCall.getCallNumber());
 		try {
 			assignEmployee(incomingCall);
 		} catch (InterruptedException e) {
@@ -35,13 +35,15 @@ public class Dispatcher {
 		if(employee != null){
 			attend(incomingCall, employee);
 		}else{
-			LOGGER.info("No hay empleado disponible que atienda llamada : " + incomingCall.getCallNumber() + ", se pondrá en espera, muchas gracias.");
+			LOGGER.info("No hay empleados disponibles para atender la llamada : " + incomingCall.getCallNumber() + ", en un momento será atendido...");
 			callsQueve.add(incomingCall);
 			callsAtendedAfterBusy.add(incomingCall);
 		}
 	}
 	
 	private void attend(IncomingCall incomingCall, Employee employee) throws InterruptedException{
+		LOGGER.info("Comenzó llamada: " + incomingCall.getCallNumber()
+				+ ", empleado asignado: " + employee.getEmployeePosition());
 		incomingCall.setAttendedBy(employee.getEmployeePosition());
 		int callDuration = CallConfiguration.getDuration();
 		Thread.sleep(callDuration);
