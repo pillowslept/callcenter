@@ -18,6 +18,7 @@ public class Dispatcher {
 	
 	List<IncomingCall> callsQueve = new ArrayList<>();
 	List<IncomingCall> callsAtended = new ArrayList<>();
+	List<IncomingCall> callsAtendedAfterBusy = new ArrayList<>();
 	
 	@Async	
 	public void dispatchCall(IncomingCall incomingCall){
@@ -36,10 +37,12 @@ public class Dispatcher {
 		}else{
 			LOGGER.info("No hay empleado disponible que atienda llamada : " + incomingCall.getCallNumber() + ", se pondrá en espera, muchas gracias.");
 			callsQueve.add(incomingCall);
+			callsAtendedAfterBusy.add(incomingCall);
 		}
 	}
 	
 	private void attend(IncomingCall incomingCall, Employee employee) throws InterruptedException{
+		incomingCall.setAttendedBy(employee.getEmployeePosition());
 		int callDuration = CallConfiguration.getDuration();
 		Thread.sleep(callDuration);
 		LOGGER.info("Se atendió llamada: " + incomingCall.getCallNumber()
@@ -62,6 +65,10 @@ public class Dispatcher {
 	
 	public List<Employee> getAvailableEmployees(){
 		return availableEmployees.getAvailableEmployees();
+	}
+
+	public List<IncomingCall> getCallsAtendedAfterBusy() {
+		return callsAtendedAfterBusy;
 	}
 	
 }
