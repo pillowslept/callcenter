@@ -17,7 +17,7 @@ public class DispatcherTest {
 	private Dispatcher dispatcher;
 
 	@Test
-	public void dispatchCalls() throws Exception {
+	public void dispatchTenCallsTest() throws Exception {
 		int incomingCalls = 10;
 
 		for (int callNumber = 1; callNumber <= incomingCalls; callNumber++) {
@@ -29,7 +29,7 @@ public class DispatcherTest {
 		List<IncomingCall> callsAtended = dispatcher.getCallsAtended();
 		List<Employee> employees = dispatcher.getAvailableEmployees();
 
-		Assert.assertTrue(callsAtended.size() == 10);
+		Assert.assertTrue(callsAtended.size() == incomingCalls);
 		Assert.assertTrue(employees.size() == 10);
 		Assert.assertTrue(employees.get(0).isAvailable());
 		Assert.assertTrue(employees.get(1).isAvailable());
