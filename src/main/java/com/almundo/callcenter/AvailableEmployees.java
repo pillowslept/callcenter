@@ -24,6 +24,7 @@ public class AvailableEmployees {
 	}
 	
 	public void createAvailableEmployees(){
+		LOGGER.info("Comienza la creación de empleados disponibles.");
 		availableEmployees.add(createEmployee(OPERATOR));
 		availableEmployees.add(createEmployee(OPERATOR));
 		availableEmployees.add(createEmployee(OPERATOR));
@@ -34,6 +35,7 @@ public class AvailableEmployees {
 		availableEmployees.add(createEmployee(DIRECTOR));
 		availableEmployees.add(createEmployee(SUPERVISOR));
 		availableEmployees.add(createEmployee(SUPERVISOR));
+		LOGGER.info("Termina la creación de empleados disponibles.");
 	}
 
 	public Employee assignEmployee(){
@@ -56,7 +58,6 @@ public class AvailableEmployees {
 			if(employee.getEmployeePosition().equals(employeePosition) && employee.isAvailable()){
 				employee.setAvailable(FALSE);
 				employeeAvailable = employee;
-				LOGGER.info("Empleado asignado: " + employee.getEmployeePosition());
 				break;
 			}
 		}
