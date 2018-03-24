@@ -4,8 +4,8 @@ public class IncomingCall {
 
 	private String personName;
 	private String duration;
-	private String attendedBy;
 	private int callNumber;
+	private EmployeePosition attendedBy;
 
 	public String getPersonName() {
 		return personName;
@@ -19,10 +19,10 @@ public class IncomingCall {
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
-	public String getAttendedBy() {
+	public EmployeePosition getAttendedBy() {
 		return attendedBy;
 	}
-	public void setAttendedBy(String attendedBy) {
+	public void setAttendedBy(EmployeePosition attendedBy) {
 		this.attendedBy = attendedBy;
 	}
 	public int getCallNumber() {
