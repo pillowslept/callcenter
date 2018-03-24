@@ -72,5 +72,10 @@ public class Dispatcher {
 	public List<IncomingCall> getCallsAtendedAfterBusy() {
 		return callsAtendedAfterBusy;
 	}
-	
+
+	public void clean() {
+		callsAtended = new ArrayList<>();
+		callsAtendedAfterBusy = new ArrayList<>();
+	}
+
 }
