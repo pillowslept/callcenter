@@ -2,33 +2,25 @@ package com.almundo.callcenter;
 
 public class Employee {
 
-	private String employeeName;
-	private String position;
 	private boolean available;
+	private EmployeePosition employeePosition;
 	
-	public Employee(String employeeName, String position){
-		this.employeeName = employeeName;
-		this.position = position;
+	public Employee(EmployeePosition employeePosition){
+		this.employeePosition = employeePosition;
 		this.available = true;
 	}
 	
-	public String getEmployeeName() {
-		return employeeName;
-	}
-	public void setEmployeeName(String employeeName) {
-		this.employeeName = employeeName;
-	}
 	public boolean isAvailable() {
 		return available;
 	}
 	public void setAvailable(boolean available) {
 		this.available = available;
 	}
-	public String getPosition() {
-		return position;
+	public EmployeePosition getEmployeePosition() {
+		return employeePosition;
 	}
-	public void setPosition(String position) {
-		this.position = position;
+	public void setEmployeePosition(EmployeePosition employeePosition) {
+		this.employeePosition = employeePosition;
 	}
 	
 }
