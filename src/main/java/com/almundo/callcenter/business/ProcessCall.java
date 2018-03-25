@@ -16,6 +16,12 @@ public class ProcessCall {
 	@Autowired
 	CallRepository callRepository;
 	
+	/**
+	 * Marca como atentida una llamada y la almacena
+	 * @param incomingCall
+	 * @param duration
+	 * @param employee
+	 */
 	public void finalizeCall(IncomingCall incomingCall, int duration, Employee employee){
 		incomingCall.setDuration(duration);
 		incomingCall.setAttendedBy(employee.getEmployeePosition());
@@ -23,10 +29,33 @@ public class ProcessCall {
 		callRepository.addCall(incomingCall);
 	}
 
+	/**
+	 * Retorna todas las llamadas atendidas
+	 * @return
+	 */
 	public List<IncomingCall> getCallsAttended(){
 		return callRepository.getCallsAttended();
 	}
 	
+	/**
+	 * Agrega una llamada que se atendió luego de ser puesta en espera
+	 * @param incomingCall
+	 */
+	public void addCallBusySystem(IncomingCall incomingCall){
+		callRepository.addCallBusySystem(incomingCall);
+	}
+	
+	/**
+	 * Retorna todas las llamadas que se atendieron luego de ser puestas en espera
+	 * @return
+	 */
+	public List<IncomingCall> getCallsBusySystem(){
+		return callRepository.getCallsBusySystem();
+	}
+	
+	/**
+	 * Limpia las llamadas que han sido procesadas
+	 */
 	public void emptyCalls(){
 		callRepository.emptyCalls();
 	}

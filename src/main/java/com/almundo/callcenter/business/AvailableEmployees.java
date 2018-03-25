@@ -20,20 +20,26 @@ public class AvailableEmployees {
 	@Autowired
 	EmployeeRepository employeeRepository;
 	
+	/**
+	 * Retorna un empleado de tipo operador, supervisor o director disponible para tomar una llamada
+	 * @return
+	 */
 	public Employee getFreeEmployee(){
-		//Search if exists an operator available for take the call
 		Employee employeeAsigned = filterEmployees(OPERATOR);
 		if(employeeAsigned == null){
-			//If no exists an operator, search if exists a supervisor available for take the call
 			employeeAsigned = filterEmployees(SUPERVISOR);
 		}
 		if(employeeAsigned == null){
-			//If no exists an operator or director, search if exists a director available for take the call
 			employeeAsigned = filterEmployees(DIRECTOR);
 		}
 		return employeeAsigned;
 	}
 	
+	/**
+	 * Filtra sobre los empleados disponibles por cargo y por disponiblidad
+	 * @param employeePosition
+	 * @return
+	 */
 	private Employee filterEmployees(EmployeePosition employeePosition){
 		Employee employeeAvailable = null;
 		for (Employee employee : employeeRepository.filterEmployeesByPosition(employeePosition)) {
@@ -46,10 +52,18 @@ public class AvailableEmployees {
 		return employeeAvailable;
 	}
 	
+	/**
+	 * Retorna todos los empleados disponibles
+	 * @return
+	 */
 	public List<Employee> getAvailableEmployees() {
 		return employeeRepository.getAvailableEmployees();
 	}
 	
+	/**
+	 * Libera un empleado
+	 * @param employee
+	 */
 	public void freeEmployee(Employee employee){
 		employeeRepository.freeEmployee(employee);
 	}

@@ -1,6 +1,5 @@
 package com.almundo.callcenter.business;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.almundo.callcenter.CallQueue;
 import com.almundo.callcenter.config.CallConfiguration;
 import com.almundo.callcenter.model.CallState;
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.IncomingCall;
+import com.almundo.callcenter.queue.CallQueue;
 import com.almundo.callcenter.utils.Constants;
 
 @Service
@@ -26,8 +25,10 @@ public class Dispatcher {
 	@Autowired
 	ProcessCall processCall;
 	
-	List<IncomingCall> callsAtendedAfterBusy = new ArrayList<>();
-	
+	/**
+	 * Recibe y despacha cada llamada que ingresa al sistema
+	 * @param incomingCall
+	 */
 	@Async
 	public void dispatchCall(IncomingCall incomingCall){
 		LOGGER.info("Ring ring. Llamada entrante : " + incomingCall.getCallNumber());
@@ -38,6 +39,12 @@ public class Dispatcher {
 		}
 	}
 
+	/**
+	 * Busca un empleado disponible y lo asigna para comenzar una llamada, en caso de no existir empleados
+	 * disponibles, adiciona la llamada a la cola de espera
+	 * @param incomingCall
+	 * @throws InterruptedException
+	 */
 	private void assignEmployee(IncomingCall incomingCall) throws InterruptedException {
 		Employee employee = availableEmployees.getFreeEmployee();
 		if(employee != null){
@@ -47,24 +54,50 @@ public class Dispatcher {
 			incomingCall.setCallState(CallState.WAITING);
 			CallQueue.getInstance();
 			CallQueue.addCallToQueue(incomingCall);
-			callsAtendedAfterBusy.add(incomingCall);
 		}
 	}
 	
+	/**
+	 * Valida si la llamada a atender estaba en espera y se procede a guardarla
+	 * @param incomingCall
+	 */
+	private void validateCallBusySystem(IncomingCall incomingCall){
+		if(incomingCall.getCallState().equals(CallState.WAITING)){
+			processCall.addCallBusySystem(incomingCall);
+		}
+	}
+	
+	/**
+	 * Comienza la atención de una llamada con un empleado asignado, libera el empleado y termina la llamada
+	 * @param incomingCall
+	 * @param employee
+	 * @throws InterruptedException
+	 */
 	private void attend(IncomingCall incomingCall, Employee employee) throws InterruptedException{
 		int callDuration = CallConfiguration.getDuration();
+
+		validateCallBusySystem(incomingCall);
+
 		incomingCall.setCallState(CallState.PROGRESS);
+
 		LOGGER.info("Comenzó llamada: " + incomingCall.getCallNumber()
 				+ ", empleado asignado: " + employee.getEmployeePosition());
 		Thread.sleep(callDuration);
 		LOGGER.info("Se atendió llamada: " + incomingCall.getCallNumber()
 				+ ", empleado asignado: " + employee.getEmployeePosition()
 				+ ", duración llamada: " + callDuration + " segundos");
+
 		availableEmployees.freeEmployee(employee);
+		
 		processCall.finalizeCall(incomingCall, callDuration, employee);
+		
 		validateCallsQueve();
 	}
 	
+	/**
+	 * Valida si existen llamadas en espera para ser atendidas
+	 * @throws InterruptedException
+	 */
 	private void validateCallsQueve() throws InterruptedException{
 		if(CallQueue.sizeQueue() > Constants.ZERO){
 			CallQueue.getInstance();
@@ -72,21 +105,35 @@ public class Dispatcher {
 		}
 	}
 	
+	/**
+	 * Retorna todas las llamadas atendidas
+	 * @return
+	 */
 	public List<IncomingCall> getCallsAtended() {
 		return processCall.getCallsAttended();
 	}
 	
+	/**
+	 * Retorna todos los empleados disponibles
+	 * @return
+	 */
 	public List<Employee> getAvailableEmployees(){
 		return availableEmployees.getAvailableEmployees();
 	}
 
+	/**
+	 * Retorna todas las llamadas que se atendieron luego de ser puestas en espera
+	 * @return
+	 */
 	public List<IncomingCall> getCallsAtendedAfterBusy() {
-		return callsAtendedAfterBusy;
+		return processCall.getCallsBusySystem();
 	}
 
+	/**
+	 * Limpia las llamadas que han sido procesadas
+	 */
 	public void clean() {
 		processCall.emptyCalls();
-		callsAtendedAfterBusy = new ArrayList<>();
 	}
 
 }

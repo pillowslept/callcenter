@@ -27,6 +27,9 @@ public class EmployeeRepository {
 		createAvailableEmployees();
 	}
 	
+	/**
+	 * Crea los empleados disponibles del sistema
+	 */
 	public void createAvailableEmployees(){
 		LOGGER.info("Comienza la creación de empleados disponibles.");
 		availableEmployees.add(createEmployee(OPERATOR));
@@ -42,18 +45,36 @@ public class EmployeeRepository {
 		LOGGER.info("Termina la creación de empleados disponibles.");
 	}
 
+	/**
+	 * Retorna todos los empleados disponibles
+	 * @return
+	 */
 	public List<Employee> getAvailableEmployees(){
 		return availableEmployees;
 	}
 
+	/**
+	 * Crea un empleado disponible
+	 * @param employeePosition
+	 * @return
+	 */
 	private Employee createEmployee(EmployeePosition employeePosition) {
 		return new Employee(employeePosition, EmployeeState.FREE);
 	}
-		
+
+	/**
+	 * Libera un empleado
+	 * @param employee
+	 */
 	public void freeEmployee(Employee employee){
 		employee.setEmployeeState(EmployeeState.FREE);
 	}
 	
+	/**
+	 * Filtra empleados disponibles por un cargo
+	 * @param employeePosition
+	 * @return
+	 */
 	public List<Employee> filterEmployeesByPosition(EmployeePosition employeePosition){
 		return this.availableEmployees
 				.stream()

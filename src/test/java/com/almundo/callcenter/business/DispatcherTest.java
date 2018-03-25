@@ -1,4 +1,4 @@
-package com.almundo.callcenter;
+package com.almundo.callcenter.business;
 
 import java.util.List;
 
@@ -12,10 +12,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.almundo.callcenter.business.Dispatcher;
-import com.almundo.callcenter.model.CallState;
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.EmployeeState;
 import com.almundo.callcenter.model.IncomingCall;
+import com.almundo.callcenter.testbuilder.CallTestBuilder;
 import com.almundo.callcenter.utils.Constants;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,12 +39,11 @@ public class DispatcherTest {
 	@Test
 	public void dispatchTenCallsTest() {
 		int incomingCalls = Constants.TEN_CALLS;
-		
 		logStartProcess(incomingCalls);
 
 		for (int callNumber = Constants.ONE; callNumber <= incomingCalls; callNumber++) {
 			sleep(100);
-			dispatcher.dispatchCall(createCall(callNumber));
+			dispatcher.dispatchCall(new CallTestBuilder().withId(callNumber).build());
 		}
 		
 		sleep(SLEEP_TEN_SECONDS);
@@ -58,19 +57,14 @@ public class DispatcherTest {
 		assertAllEmployeesFree(employees);
 	}
 	
-	private void logStartProcess(int incomingCalls){
-		LOGGER.info("Comenzando procesamiento con " + incomingCalls + " llamadas concurrentes");
-	}
-	
 	@Test
 	public void dispatchFifteenCallsTest() {
 		int incomingCalls = Constants.FIFTEEN_CALLS;
-		
 		logStartProcess(incomingCalls);
 
 		for (int callNumber = Constants.ONE; callNumber <= incomingCalls; callNumber++) {
 			sleep(100);
-			dispatcher.dispatchCall(createCall(callNumber));
+			dispatcher.dispatchCall(new CallTestBuilder().withId(callNumber).build());
 		}
 		
 		sleep(SLEEP_TWENTY_SECONDS);
@@ -87,12 +81,11 @@ public class DispatcherTest {
 	@Test
 	public void dispatchFiveCallsTest() {
 		int incomingCalls = Constants.FIVE_CALLS;
-
 		logStartProcess(incomingCalls);
 		
 		for (int callNumber = Constants.ONE; callNumber <= incomingCalls; callNumber++) {
 			sleep(100);
-			dispatcher.dispatchCall(createCall(callNumber));
+			dispatcher.dispatchCall(new CallTestBuilder().withId(callNumber).build());
 		}
 		
 		sleep(SLEEP_TEN_SECONDS);
@@ -105,19 +98,12 @@ public class DispatcherTest {
 		Assert.assertTrue(callsAtendedAfterBusy.size() == Constants.ZERO);
 		assertAllEmployeesFree(employees);
 	}
-
+	
 	private void assertAllEmployeesFree(List<Employee> employees){
 		Assert.assertTrue(employees.size() == AVAILABLE_EMPLOYEES);
 		for (Employee employee : employees) {
 			Assert.assertTrue(employee.getEmployeeState().equals(EmployeeState.FREE));
 		}
-	}
-
-	private IncomingCall createCall(int callNumber){
-		IncomingCall incomingCall = new IncomingCall();
-		incomingCall.setCallNumber(callNumber);
-		incomingCall.setCallState(CallState.INCOMING);
-		return incomingCall;
 	}
 
 	private void sleep(int time) {
@@ -128,6 +114,8 @@ public class DispatcherTest {
 		}
 	}
 	
-	
+	private void logStartProcess(int incomingCalls){
+		LOGGER.info("Comenzando procesamiento con " + incomingCalls + " llamadas concurrentes");
+	}
 
 }
