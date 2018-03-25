@@ -7,6 +7,7 @@ import static com.almundo.callcenter.model.EmployeeState.BUSY;
 import static com.almundo.callcenter.model.EmployeeState.FREE;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,13 +44,16 @@ public class AvailableEmployees {
 	 */
 	private Employee filterEmployees(EmployeePosition employeePosition){
 		Employee employeeAvailable = null;
-		for (Employee employee : employeeRepository.filterEmployeesByPosition(employeePosition)) {
-			if(employee.getEmployeeState().equals(FREE)){
-				employee.setEmployeeState(BUSY);
-				employeeAvailable = employee;
-				break;
-			}
+		Optional<Employee> result = employeeRepository
+				.filterEmployeesByPosition(employeePosition).stream()
+				.filter(employee -> (employee.getEmployeeState().equals(FREE)))
+				.findFirst();
+
+		if (result.isPresent()) {
+			employeeAvailable = result.get();
+			employeeAvailable.setEmployeeState(BUSY);
 		}
+
 		return employeeAvailable;
 	}
 	
