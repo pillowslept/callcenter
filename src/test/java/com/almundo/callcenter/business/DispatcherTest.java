@@ -25,7 +25,7 @@ public class DispatcherTest {
 
 	@Autowired
 	private Dispatcher dispatcher;
-	
+
 	private static final int AVAILABLE_EMPLOYEES = 10;
 	private static final int SLEEP_TEN_SECONDS = 10000;
 	private static final int SLEEP_TWENTY_SECONDS = 20000;
@@ -51,15 +51,10 @@ public class DispatcherTest {
 		
 		sleep(SLEEP_TEN_SECONDS);
 		
-		List<IncomingCall> callsAttended = dispatcher.getCallsAtended();
-		List<IncomingCall> callsAttendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
-		List<Employee> employees = dispatcher.getAvailableEmployees();
-
-		Assert.assertEquals(callsAttended.size(), incomingCalls);
-		Assert.assertEquals(callsAttendedAfterBusy.size(), Constants.ZERO);
-		assertAllEmployeesFree(employees);
+		assertCallsAttended(incomingCalls, Constants.ZERO);
+		assertAllEmployeesFree();
 	}
-
+	
 	/**
 	 * Cuando no existen empleados disponibles o ingresan más de 10 llamadas al sistema, lo que se hace es informar que cada llamada se encuentra en espera
 	 * y que se procederá a atenderla en el momento en que un empleado ocupado pase a estar disponible, esto se hace usando una cola de llamadas en la cual
@@ -77,15 +72,10 @@ public class DispatcherTest {
 		
 		sleep(SLEEP_TWENTY_SECONDS);
 		
-		List<IncomingCall> callsAttended = dispatcher.getCallsAtended();
-		List<IncomingCall> callsAttendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
-		List<Employee> employees = dispatcher.getAvailableEmployees();
-
-		Assert.assertEquals(callsAttended.size(), incomingCalls);
-		Assert.assertEquals(callsAttendedAfterBusy.size(), incomingCalls - Constants.TEN_CALLS);
-		assertAllEmployeesFree(employees);
+		assertCallsAttended(incomingCalls, incomingCalls - Constants.TEN_CALLS);
+		assertAllEmployeesFree();
 	}
-	
+
 	/**
 	 * Si al sistema ingresan menos de 10 llamadas, existirán empleados que no tomen ninguna de estas llamadas 
 	 */
@@ -101,24 +91,35 @@ public class DispatcherTest {
 		
 		sleep(SLEEP_TEN_SECONDS);
 		
-		List<IncomingCall> callsAttended = dispatcher.getCallsAtended();
-		List<IncomingCall> callsAttendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
-		List<Employee> employees = dispatcher.getAvailableEmployees();
-
-		Assert.assertEquals(callsAttended.size(), incomingCalls);
-		Assert.assertEquals(callsAttendedAfterBusy.size(), Constants.ZERO);
-		assertAllEmployeesFree(employees);
+		assertCallsAttended(incomingCalls, Constants.ZERO);
+		assertAllEmployeesFree();
 	}
-	
+
 	/**
 	 * Se espera que al terminar todo el procesamiento de las llamdas entrantes, todos los empleados del sistema se encuentren libres
 	 * @param employees
 	 */
-	private void assertAllEmployeesFree(List<Employee> employees){
+	private void assertAllEmployeesFree(){
+		List<Employee> employees = dispatcher.getAvailableEmployees();
 		Assert.assertTrue(employees.size() == AVAILABLE_EMPLOYEES);
 		for (Employee employee : employees) {
 			Assert.assertEquals(employee.getEmployeeState(), EmployeeState.FREE);
 		}
+	}
+
+	/**
+	 * Se espera que el total de llamadas atendidas sean las mismas que ingresaron al sistema,
+	 * adicional se espera que cuando sean más de 10 llamadas concurrentes, estas llamadas adicionales
+	 * se atiendan también
+	 * @param incomingCalls
+	 * @param attendedAfterBusy
+	 */
+	private void assertCallsAttended(int incomingCalls, int attendedAfterBusy){
+		List<IncomingCall> callsAttended = dispatcher.getCallsAtended();
+		List<IncomingCall> callsAttendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
+
+		Assert.assertEquals(callsAttended.size(), incomingCalls);
+		Assert.assertEquals(callsAttendedAfterBusy.size(), attendedAfterBusy);
 	}
 
 	/**
@@ -132,7 +133,7 @@ public class DispatcherTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Informa con cuantas llamadas concurrentes comienza el procesamiento 
 	 * @param incomingCalls
