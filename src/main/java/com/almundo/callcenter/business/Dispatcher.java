@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.almundo.callcenter.CallQueue;
 import com.almundo.callcenter.config.CallConfiguration;
+import com.almundo.callcenter.model.CallState;
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.IncomingCall;
+import com.almundo.callcenter.utils.Constants;
 
 @Service
 public class Dispatcher {
@@ -21,7 +23,9 @@ public class Dispatcher {
 	@Autowired
 	AvailableEmployees availableEmployees;
 	
-	List<IncomingCall> callsAtended = new ArrayList<>();
+	@Autowired
+	ProcessCall processCall;
+	
 	List<IncomingCall> callsAtendedAfterBusy = new ArrayList<>();
 	
 	@Async
@@ -40,6 +44,7 @@ public class Dispatcher {
 			attend(incomingCall, employee);
 		}else{
 			LOGGER.info("No hay empleados disponibles para atender la llamada : " + incomingCall.getCallNumber() + ", en un momento será atendido...");
+			incomingCall.setCallState(CallState.WAITING);
 			CallQueue.getInstance();
 			CallQueue.addCallToQueue(incomingCall);
 			callsAtendedAfterBusy.add(incomingCall);
@@ -47,28 +52,28 @@ public class Dispatcher {
 	}
 	
 	private void attend(IncomingCall incomingCall, Employee employee) throws InterruptedException{
+		int callDuration = CallConfiguration.getDuration();
+		incomingCall.setCallState(CallState.PROGRESS);
 		LOGGER.info("Comenzó llamada: " + incomingCall.getCallNumber()
 				+ ", empleado asignado: " + employee.getEmployeePosition());
-		incomingCall.setAttendedBy(employee.getEmployeePosition());
-		int callDuration = CallConfiguration.getDuration();
 		Thread.sleep(callDuration);
 		LOGGER.info("Se atendió llamada: " + incomingCall.getCallNumber()
 				+ ", empleado asignado: " + employee.getEmployeePosition()
 				+ ", duración llamada: " + callDuration + " segundos");
 		availableEmployees.freeEmployee(employee);
-		callsAtended.add(incomingCall);
+		processCall.finalizeCall(incomingCall, callDuration, employee);
 		validateCallsQueve();
 	}
 	
 	private void validateCallsQueve() throws InterruptedException{
-		if(CallQueue.sizeQueue() > 0){
+		if(CallQueue.sizeQueue() > Constants.ZERO){
 			CallQueue.getInstance();
 			assignEmployee(CallQueue.getCall());
 		}
 	}
 	
 	public List<IncomingCall> getCallsAtended() {
-		return callsAtended;
+		return processCall.getCallsAttended();
 	}
 	
 	public List<Employee> getAvailableEmployees(){
@@ -80,7 +85,7 @@ public class Dispatcher {
 	}
 
 	public void clean() {
-		callsAtended = new ArrayList<>();
+		processCall.emptyCalls();
 		callsAtendedAfterBusy = new ArrayList<>();
 	}
 

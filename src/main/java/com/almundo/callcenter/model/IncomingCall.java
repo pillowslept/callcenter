@@ -3,21 +3,15 @@ package com.almundo.callcenter.model;
 
 public class IncomingCall {
 
-	private String personName;
-	private String duration;
 	private int callNumber;
+	private int duration;
+	private CallState callState;
 	private EmployeePosition attendedBy;
 
-	public String getPersonName() {
-		return personName;
-	}
-	public void setPersonName(String personName) {
-		this.personName = personName;
-	}
-	public String getDuration() {
+	public int getDuration() {
 		return duration;
 	}
-	public void setDuration(String duration) {
+	public void setDuration(int duration) {
 		this.duration = duration;
 	}
 	public EmployeePosition getAttendedBy() {
@@ -31,6 +25,12 @@ public class IncomingCall {
 	}
 	public void setCallNumber(int callNumber) {
 		this.callNumber = callNumber;
+	}
+	public CallState getCallState() {
+		return callState;
+	}
+	public void setCallState(CallState callState) {
+		this.callState = callState;
 	}
 	
 }

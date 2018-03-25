@@ -2,6 +2,7 @@ package com.almundo.callcenter;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.almundo.callcenter.business.Dispatcher;
+import com.almundo.callcenter.model.CallState;
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.EmployeeState;
 import com.almundo.callcenter.model.IncomingCall;
@@ -19,6 +21,8 @@ import com.almundo.callcenter.utils.Constants;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "classpath:applicationContext-test.xml" })
 public class DispatcherTest {
+	
+	private static final Logger LOGGER = Logger.getLogger(DispatcherTest.class.getName());
 
 	@Autowired
 	private Dispatcher dispatcher;
@@ -35,6 +39,8 @@ public class DispatcherTest {
 	@Test
 	public void dispatchTenCallsTest() {
 		int incomingCalls = Constants.TEN_CALLS;
+		
+		logStartProcess(incomingCalls);
 
 		for (int callNumber = Constants.ONE; callNumber <= incomingCalls; callNumber++) {
 			sleep(100);
@@ -52,9 +58,15 @@ public class DispatcherTest {
 		assertAllEmployeesFree(employees);
 	}
 	
+	private void logStartProcess(int incomingCalls){
+		LOGGER.info("Comenzando procesamiento con " + incomingCalls + " llamadas concurrentes");
+	}
+	
 	@Test
 	public void dispatchFifteenCallsTest() {
 		int incomingCalls = Constants.FIFTEEN_CALLS;
+		
+		logStartProcess(incomingCalls);
 
 		for (int callNumber = Constants.ONE; callNumber <= incomingCalls; callNumber++) {
 			sleep(100);
@@ -76,6 +88,8 @@ public class DispatcherTest {
 	public void dispatchFiveCallsTest() {
 		int incomingCalls = Constants.FIVE_CALLS;
 
+		logStartProcess(incomingCalls);
+		
 		for (int callNumber = Constants.ONE; callNumber <= incomingCalls; callNumber++) {
 			sleep(100);
 			dispatcher.dispatchCall(createCall(callNumber));
@@ -102,6 +116,7 @@ public class DispatcherTest {
 	private IncomingCall createCall(int callNumber){
 		IncomingCall incomingCall = new IncomingCall();
 		incomingCall.setCallNumber(callNumber);
+		incomingCall.setCallState(CallState.INCOMING);
 		return incomingCall;
 	}
 

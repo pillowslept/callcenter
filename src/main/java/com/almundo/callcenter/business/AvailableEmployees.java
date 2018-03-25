@@ -3,13 +3,9 @@ package com.almundo.callcenter.business;
 import static com.almundo.callcenter.model.EmployeePosition.DIRECTOR;
 import static com.almundo.callcenter.model.EmployeePosition.OPERATOR;
 import static com.almundo.callcenter.model.EmployeePosition.SUPERVISOR;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +17,6 @@ import com.almundo.callcenter.repository.EmployeeRepository;
 @Service
 public class AvailableEmployees {
 
-	private static final Logger LOGGER = Logger.getLogger(AvailableEmployees.class.getName());
-	
 	@Autowired
 	EmployeeRepository employeeRepository;
 	
