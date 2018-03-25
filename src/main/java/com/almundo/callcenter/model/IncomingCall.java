@@ -1,4 +1,5 @@
-package com.almundo.callcenter;
+package com.almundo.callcenter.model;
+
 
 public class IncomingCall {
 

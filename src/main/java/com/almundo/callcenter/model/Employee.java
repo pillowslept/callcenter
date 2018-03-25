@@ -1,26 +1,27 @@
-package com.almundo.callcenter;
+package com.almundo.callcenter.model;
+
 
 public class Employee {
 
-	private boolean available;
 	private EmployeePosition employeePosition;
+	private EmployeeState employeeState;
 	
-	public Employee(EmployeePosition employeePosition){
+	public Employee(EmployeePosition employeePosition, EmployeeState employeeState){
 		this.employeePosition = employeePosition;
-		this.available = true;
+		this.employeeState = employeeState;
 	}
 	
-	public boolean isAvailable() {
-		return available;
-	}
-	public void setAvailable(boolean available) {
-		this.available = available;
-	}
 	public EmployeePosition getEmployeePosition() {
 		return employeePosition;
 	}
 	public void setEmployeePosition(EmployeePosition employeePosition) {
 		this.employeePosition = employeePosition;
+	}
+	public EmployeeState getEmployeeState() {
+		return employeeState;
+	}
+	public void setEmployeeState(EmployeeState employeeState) {
+		this.employeeState = employeeState;
 	}
 	
 }

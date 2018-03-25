@@ -1,4 +1,4 @@
-package com.almundo.callcenter;
+package com.almundo.callcenter.business;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.almundo.callcenter.CallQueue;
+import com.almundo.callcenter.config.CallConfiguration;
+import com.almundo.callcenter.model.Employee;
+import com.almundo.callcenter.model.IncomingCall;
+
 @Service
 public class Dispatcher {
 	
@@ -16,7 +21,6 @@ public class Dispatcher {
 	@Autowired
 	AvailableEmployees availableEmployees;
 	
-	List<IncomingCall> callsQueve = new ArrayList<>();
 	List<IncomingCall> callsAtended = new ArrayList<>();
 	List<IncomingCall> callsAtendedAfterBusy = new ArrayList<>();
 	
@@ -31,12 +35,13 @@ public class Dispatcher {
 	}
 
 	private void assignEmployee(IncomingCall incomingCall) throws InterruptedException {
-		Employee employee = availableEmployees.assignEmployee();
+		Employee employee = availableEmployees.getFreeEmployee();
 		if(employee != null){
 			attend(incomingCall, employee);
 		}else{
 			LOGGER.info("No hay empleados disponibles para atender la llamada : " + incomingCall.getCallNumber() + ", en un momento será atendido...");
-			callsQueve.add(incomingCall);
+			CallQueue.getInstance();
+			CallQueue.addCallToQueue(incomingCall);
 			callsAtendedAfterBusy.add(incomingCall);
 		}
 	}
@@ -56,8 +61,9 @@ public class Dispatcher {
 	}
 	
 	private void validateCallsQueve() throws InterruptedException{
-		if(!callsQueve.isEmpty()){
-			assignEmployee(callsQueve.remove(0));
+		if(CallQueue.sizeQueue() > 0){
+			CallQueue.getInstance();
+			assignEmployee(CallQueue.getCall());
 		}
 	}
 	

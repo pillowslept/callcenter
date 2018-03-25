@@ -1,4 +1,4 @@
-package com.almundo.callcenter;
+package com.almundo.callcenter.config;
 
 import java.util.Random;
 

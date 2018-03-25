@@ -1,8 +1,8 @@
-package com.almundo.callcenter;
+package com.almundo.callcenter.business;
 
-import static com.almundo.callcenter.EmployeePosition.DIRECTOR;
-import static com.almundo.callcenter.EmployeePosition.OPERATOR;
-import static com.almundo.callcenter.EmployeePosition.SUPERVISOR;
+import static com.almundo.callcenter.model.EmployeePosition.DIRECTOR;
+import static com.almundo.callcenter.model.EmployeePosition.OPERATOR;
+import static com.almundo.callcenter.model.EmployeePosition.SUPERVISOR;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
@@ -10,35 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.almundo.callcenter.model.Employee;
+import com.almundo.callcenter.model.EmployeePosition;
+import com.almundo.callcenter.model.EmployeeState;
+import com.almundo.callcenter.repository.EmployeeRepository;
 
 @Service
 public class AvailableEmployees {
 
 	private static final Logger LOGGER = Logger.getLogger(AvailableEmployees.class.getName());
 	
-	List<Employee> availableEmployees = new ArrayList<>();
+	@Autowired
+	EmployeeRepository employeeRepository;
 	
-	public AvailableEmployees(){
-		createAvailableEmployees();
-	}
-	
-	public void createAvailableEmployees(){
-		LOGGER.info("Comienza la creación de empleados disponibles.");
-		availableEmployees.add(createEmployee(OPERATOR));
-		availableEmployees.add(createEmployee(OPERATOR));
-		availableEmployees.add(createEmployee(OPERATOR));
-		availableEmployees.add(createEmployee(OPERATOR));
-		availableEmployees.add(createEmployee(OPERATOR));
-		availableEmployees.add(createEmployee(OPERATOR));
-		availableEmployees.add(createEmployee(DIRECTOR));
-		availableEmployees.add(createEmployee(DIRECTOR));
-		availableEmployees.add(createEmployee(SUPERVISOR));
-		availableEmployees.add(createEmployee(SUPERVISOR));
-		LOGGER.info("Termina la creación de empleados disponibles.");
-	}
-
-	public Employee assignEmployee(){
+	public Employee getFreeEmployee(){
 		//Search if exists an operator available for take the call
 		Employee employeeAsigned = filterEmployees(OPERATOR);
 		if(employeeAsigned == null){
@@ -54,25 +42,21 @@ public class AvailableEmployees {
 	
 	private Employee filterEmployees(EmployeePosition employeePosition){
 		Employee employeeAvailable = null;
-		for (Employee employee : availableEmployees) {
-			if(employee.getEmployeePosition().equals(employeePosition) && employee.isAvailable()){
-				employee.setAvailable(FALSE);
+		for (Employee employee : employeeRepository.filterEmployeesByPosition(employeePosition)) {
+			if(employee.getEmployeeState().equals(EmployeeState.FREE)){
+				employee.setEmployeeState(EmployeeState.BUSY);
 				employeeAvailable = employee;
 				break;
 			}
 		}
 		return employeeAvailable;
 	}
-
-	private Employee createEmployee(EmployeePosition employeePosition) {
-		return new Employee(employeePosition);
-	}
 	
 	public List<Employee> getAvailableEmployees() {
-		return availableEmployees;
+		return employeeRepository.getAvailableEmployees();
 	}
 	
 	public void freeEmployee(Employee employee){
-		employee.setAvailable(TRUE);
+		employeeRepository.freeEmployee(employee);
 	}
 }
