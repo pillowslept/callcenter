@@ -15,6 +15,7 @@ public class CallRepository {
 
 	public CallRepository(){
 		callsAttended = new ArrayList<>();
+		callsAttendedAfterBusy = new ArrayList<>();
 	}
 	
 	/**
