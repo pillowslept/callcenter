@@ -76,22 +76,21 @@ public class Dispatcher {
 	 * @throws InterruptedException
 	 */
 	private void attend(IncomingCall incomingCall, Employee employee) throws InterruptedException{
-		int callDuration = CallConfiguration.getDuration();
-
 		validateCallBusySystem(incomingCall);
 
 		incomingCall.setCallState(PROGRESS);
+		incomingCall.setDuration(CallConfiguration.getDuration());
 
 		LOGGER.info("Comenzó llamada: " + incomingCall.getCallNumber()
 				+ ", empleado asignado: " + employee.getEmployeePosition());
-		Thread.sleep(callDuration);
+		Thread.sleep(incomingCall.getDuration());
 		LOGGER.info("Se atendió llamada: " + incomingCall.getCallNumber()
 				+ ", empleado asignado: " + employee.getEmployeePosition()
-				+ ", duración llamada: " + callDuration + " segundos");
+				+ ", duración llamada: " + incomingCall.getDuration() + " segundos");
 
 		availableEmployees.freeEmployee(employee);
 		
-		processCall.finalizeCall(incomingCall, callDuration, employee);
+		processCall.finalizeCall(incomingCall, employee);
 		
 		validateCallsQueve();
 	}

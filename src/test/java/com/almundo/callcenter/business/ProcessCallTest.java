@@ -33,10 +33,10 @@ public class ProcessCallTest {
 	@Test
 	public void finalizeCallTest() {
 		IncomingCall incomingCall = new IncomingCall();
-		int duration = CallConfiguration.getDuration();
+		incomingCall.setDuration(CallConfiguration.getDuration());
 		Employee employee = new Employee(SUPERVISOR, BUSY);
 
-		processCall.finalizeCall(incomingCall, duration, employee);
+		processCall.finalizeCall(incomingCall, employee);
 		
 		Assert.assertNotNull(incomingCall);
 		Assert.assertEquals(incomingCall.getCallState(), CallState.ATTENDED);

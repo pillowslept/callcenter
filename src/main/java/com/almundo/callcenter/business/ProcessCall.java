@@ -22,8 +22,7 @@ public class ProcessCall {
 	 * @param duration
 	 * @param employee
 	 */
-	public void finalizeCall(IncomingCall incomingCall, int duration, Employee employee){
-		incomingCall.setDuration(duration);
+	public void finalizeCall(IncomingCall incomingCall, Employee employee){
 		incomingCall.setAttendedBy(employee.getEmployeePosition());
 		incomingCall.setCallState(CallState.ATTENDED);
 		callRepository.addCall(incomingCall);
