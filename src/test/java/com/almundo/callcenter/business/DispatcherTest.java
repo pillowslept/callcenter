@@ -35,6 +35,10 @@ public class DispatcherTest {
 		dispatcher.clean();
 	}
 
+	/**
+	 * Cuando ingresan 10 llamadas al sistema, todas las llamadas comienzan a ser atendidas inmediatamente, esto debido a que
+	 * el sistema posee 10 empleados disponibles para atender las llamadas entrantes.
+	 */
 	@Test
 	public void dispatchTenCallsTest() {
 		int incomingCalls = Constants.TEN_CALLS;
@@ -47,15 +51,20 @@ public class DispatcherTest {
 		
 		sleep(SLEEP_TEN_SECONDS);
 		
-		List<IncomingCall> callsAtended = dispatcher.getCallsAtended();
-		List<IncomingCall> callsAtendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
+		List<IncomingCall> callsAttended = dispatcher.getCallsAtended();
+		List<IncomingCall> callsAttendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
 		List<Employee> employees = dispatcher.getAvailableEmployees();
 
-		Assert.assertEquals(callsAtended.size(), incomingCalls);
-		Assert.assertEquals(callsAtendedAfterBusy.size(), Constants.ZERO);
+		Assert.assertEquals(callsAttended.size(), incomingCalls);
+		Assert.assertEquals(callsAttendedAfterBusy.size(), Constants.ZERO);
 		assertAllEmployeesFree(employees);
 	}
 
+	/**
+	 * Cuando no existen empleados disponibles o ingresan más de 10 llamadas al sistema, lo que se hace es informar que cada llamada se encuentra en espera
+	 * y que se procederá a atenderla en el momento en que un empleado ocupado pase a estar disponible, esto se hace usando una cola de llamadas en la cual
+	 * se van agregando las llamadas pendientes y esta cola es leída inmediatamente cuando un empleado es liberado.
+	 */
 	@Test
 	public void dispatchFifteenCallsTest() {
 		int incomingCalls = Constants.FIFTEEN_CALLS;
@@ -68,15 +77,18 @@ public class DispatcherTest {
 		
 		sleep(SLEEP_TWENTY_SECONDS);
 		
-		List<IncomingCall> callsAtended = dispatcher.getCallsAtended();
-		List<IncomingCall> callsAtendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
+		List<IncomingCall> callsAttended = dispatcher.getCallsAtended();
+		List<IncomingCall> callsAttendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
 		List<Employee> employees = dispatcher.getAvailableEmployees();
 
-		Assert.assertEquals(callsAtended.size(), incomingCalls);
-		Assert.assertEquals(callsAtendedAfterBusy.size(), incomingCalls - Constants.TEN_CALLS);
+		Assert.assertEquals(callsAttended.size(), incomingCalls);
+		Assert.assertEquals(callsAttendedAfterBusy.size(), incomingCalls - Constants.TEN_CALLS);
 		assertAllEmployeesFree(employees);
 	}
 	
+	/**
+	 * Si al sistema ingresan menos de 10 llamadas, existirán empleados que no tomen ninguna de estas llamadas 
+	 */
 	@Test
 	public void dispatchFiveCallsTest() {
 		int incomingCalls = Constants.FIVE_CALLS;
@@ -89,15 +101,19 @@ public class DispatcherTest {
 		
 		sleep(SLEEP_TEN_SECONDS);
 		
-		List<IncomingCall> callsAtended = dispatcher.getCallsAtended();
-		List<IncomingCall> callsAtendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
+		List<IncomingCall> callsAttended = dispatcher.getCallsAtended();
+		List<IncomingCall> callsAttendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
 		List<Employee> employees = dispatcher.getAvailableEmployees();
 
-		Assert.assertEquals(callsAtended.size(), incomingCalls);
-		Assert.assertEquals(callsAtendedAfterBusy.size(), Constants.ZERO);
+		Assert.assertEquals(callsAttended.size(), incomingCalls);
+		Assert.assertEquals(callsAttendedAfterBusy.size(), Constants.ZERO);
 		assertAllEmployeesFree(employees);
 	}
 	
+	/**
+	 * Se espera que al terminar todo el procesamiento de las llamdas entrantes, todos los empleados del sistema se encuentren libres
+	 * @param employees
+	 */
 	private void assertAllEmployeesFree(List<Employee> employees){
 		Assert.assertTrue(employees.size() == AVAILABLE_EMPLOYEES);
 		for (Employee employee : employees) {
@@ -105,6 +121,10 @@ public class DispatcherTest {
 		}
 	}
 
+	/**
+	 * Esperar un tiempo a que termine la ejecución de un proceso
+	 * @param time
+	 */
 	private void sleep(int time) {
 		try {
 			Thread.sleep(time);
@@ -113,6 +133,10 @@ public class DispatcherTest {
 		}
 	}
 	
+	/**
+	 * Informa con cuantas llamadas concurrentes comienza el procesamiento 
+	 * @param incomingCalls
+	 */
 	private void logStartProcess(int incomingCalls){
 		LOGGER.info("Comenzando procesamiento con " + incomingCalls + " llamadas concurrentes");
 	}
