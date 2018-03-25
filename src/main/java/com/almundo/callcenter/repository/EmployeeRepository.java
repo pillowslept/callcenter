@@ -3,6 +3,7 @@ package com.almundo.callcenter.repository;
 import static com.almundo.callcenter.model.EmployeePosition.DIRECTOR;
 import static com.almundo.callcenter.model.EmployeePosition.OPERATOR;
 import static com.almundo.callcenter.model.EmployeePosition.SUPERVISOR;
+import static com.almundo.callcenter.model.EmployeeState.FREE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.EmployeePosition;
-import com.almundo.callcenter.model.EmployeeState;
 
 @Repository
 public class EmployeeRepository {
@@ -59,7 +59,7 @@ public class EmployeeRepository {
 	 * @return
 	 */
 	private Employee createEmployee(EmployeePosition employeePosition) {
-		return new Employee(employeePosition, EmployeeState.FREE);
+		return new Employee(employeePosition, FREE);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class EmployeeRepository {
 	 * @param employee
 	 */
 	public void freeEmployee(Employee employee){
-		employee.setEmployeeState(EmployeeState.FREE);
+		employee.setEmployeeState(FREE);
 	}
 	
 	/**

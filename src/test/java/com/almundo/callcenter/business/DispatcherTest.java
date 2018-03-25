@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.almundo.callcenter.business.Dispatcher;
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.EmployeeState;
 import com.almundo.callcenter.model.IncomingCall;
@@ -52,11 +51,11 @@ public class DispatcherTest {
 		List<IncomingCall> callsAtendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
 		List<Employee> employees = dispatcher.getAvailableEmployees();
 
-		Assert.assertTrue(callsAtended.size() == incomingCalls);
-		Assert.assertTrue(callsAtendedAfterBusy.size() == Constants.ZERO);
+		Assert.assertEquals(callsAtended.size(), incomingCalls);
+		Assert.assertEquals(callsAtendedAfterBusy.size(), Constants.ZERO);
 		assertAllEmployeesFree(employees);
 	}
-	
+
 	@Test
 	public void dispatchFifteenCallsTest() {
 		int incomingCalls = Constants.FIFTEEN_CALLS;
@@ -73,8 +72,8 @@ public class DispatcherTest {
 		List<IncomingCall> callsAtendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
 		List<Employee> employees = dispatcher.getAvailableEmployees();
 
-		Assert.assertTrue(callsAtended.size() == incomingCalls);
-		Assert.assertTrue(callsAtendedAfterBusy.size() == incomingCalls - Constants.TEN_CALLS);
+		Assert.assertEquals(callsAtended.size(), incomingCalls);
+		Assert.assertEquals(callsAtendedAfterBusy.size(), incomingCalls - Constants.TEN_CALLS);
 		assertAllEmployeesFree(employees);
 	}
 	
@@ -94,15 +93,15 @@ public class DispatcherTest {
 		List<IncomingCall> callsAtendedAfterBusy = dispatcher.getCallsAtendedAfterBusy();
 		List<Employee> employees = dispatcher.getAvailableEmployees();
 
-		Assert.assertTrue(callsAtended.size() == incomingCalls);
-		Assert.assertTrue(callsAtendedAfterBusy.size() == Constants.ZERO);
+		Assert.assertEquals(callsAtended.size(), incomingCalls);
+		Assert.assertEquals(callsAtendedAfterBusy.size(), Constants.ZERO);
 		assertAllEmployeesFree(employees);
 	}
 	
 	private void assertAllEmployeesFree(List<Employee> employees){
 		Assert.assertTrue(employees.size() == AVAILABLE_EMPLOYEES);
 		for (Employee employee : employees) {
-			Assert.assertTrue(employee.getEmployeeState().equals(EmployeeState.FREE));
+			Assert.assertEquals(employee.getEmployeeState(), EmployeeState.FREE);
 		}
 	}
 

@@ -1,5 +1,9 @@
 package com.almundo.callcenter.business;
 
+import static com.almundo.callcenter.model.CallState.PROGRESS;
+import static com.almundo.callcenter.model.CallState.WAITING;
+import static com.almundo.callcenter.utils.Constants.ZERO;
+
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,11 +12,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.almundo.callcenter.config.CallConfiguration;
-import com.almundo.callcenter.model.CallState;
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.IncomingCall;
 import com.almundo.callcenter.queue.CallQueue;
-import com.almundo.callcenter.utils.Constants;
 
 @Service
 public class Dispatcher {
@@ -51,7 +53,7 @@ public class Dispatcher {
 			attend(incomingCall, employee);
 		}else{
 			LOGGER.info("No hay empleados disponibles para atender la llamada : " + incomingCall.getCallNumber() + ", en un momento será atendido...");
-			incomingCall.setCallState(CallState.WAITING);
+			incomingCall.setCallState(WAITING);
 			CallQueue.getInstance();
 			CallQueue.addCallToQueue(incomingCall);
 		}
@@ -62,7 +64,7 @@ public class Dispatcher {
 	 * @param incomingCall
 	 */
 	private void validateCallBusySystem(IncomingCall incomingCall){
-		if(incomingCall.getCallState().equals(CallState.WAITING)){
+		if(incomingCall.getCallState().equals(WAITING)){
 			processCall.addCallBusySystem(incomingCall);
 		}
 	}
@@ -78,7 +80,7 @@ public class Dispatcher {
 
 		validateCallBusySystem(incomingCall);
 
-		incomingCall.setCallState(CallState.PROGRESS);
+		incomingCall.setCallState(PROGRESS);
 
 		LOGGER.info("Comenzó llamada: " + incomingCall.getCallNumber()
 				+ ", empleado asignado: " + employee.getEmployeePosition());
@@ -99,7 +101,7 @@ public class Dispatcher {
 	 * @throws InterruptedException
 	 */
 	private void validateCallsQueve() throws InterruptedException{
-		if(CallQueue.sizeQueue() > Constants.ZERO){
+		if(CallQueue.sizeQueue() > ZERO){
 			CallQueue.getInstance();
 			assignEmployee(CallQueue.getCall());
 		}

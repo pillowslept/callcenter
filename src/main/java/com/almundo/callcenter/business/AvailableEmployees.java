@@ -3,6 +3,8 @@ package com.almundo.callcenter.business;
 import static com.almundo.callcenter.model.EmployeePosition.DIRECTOR;
 import static com.almundo.callcenter.model.EmployeePosition.OPERATOR;
 import static com.almundo.callcenter.model.EmployeePosition.SUPERVISOR;
+import static com.almundo.callcenter.model.EmployeeState.BUSY;
+import static com.almundo.callcenter.model.EmployeeState.FREE;
 
 import java.util.List;
 
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.almundo.callcenter.model.Employee;
 import com.almundo.callcenter.model.EmployeePosition;
-import com.almundo.callcenter.model.EmployeeState;
 import com.almundo.callcenter.repository.EmployeeRepository;
 
 @Service
@@ -43,8 +44,8 @@ public class AvailableEmployees {
 	private Employee filterEmployees(EmployeePosition employeePosition){
 		Employee employeeAvailable = null;
 		for (Employee employee : employeeRepository.filterEmployeesByPosition(employeePosition)) {
-			if(employee.getEmployeeState().equals(EmployeeState.FREE)){
-				employee.setEmployeeState(EmployeeState.BUSY);
+			if(employee.getEmployeeState().equals(FREE)){
+				employee.setEmployeeState(BUSY);
 				employeeAvailable = employee;
 				break;
 			}
@@ -65,7 +66,7 @@ public class AvailableEmployees {
 	 * @param employee
 	 */
 	public void freeEmployee(Employee employee){
-		employee.setEmployeeState(EmployeeState.FREE);
+		employee.setEmployeeState(FREE);
 		employeeRepository.freeEmployee(employee);
 	}
 }
