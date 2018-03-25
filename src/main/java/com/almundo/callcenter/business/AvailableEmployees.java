@@ -65,6 +65,7 @@ public class AvailableEmployees {
 	 * @param employee
 	 */
 	public void freeEmployee(Employee employee){
+		employee.setEmployeeState(EmployeeState.FREE);
 		employeeRepository.freeEmployee(employee);
 	}
 }
